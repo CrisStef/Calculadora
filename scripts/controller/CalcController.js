@@ -41,6 +41,11 @@ class CalcController {
 
                 console.log(btn.className.baseVal.replace("btn-", ""));
             });
+
+            this.addEventListenerAll(btn, "mouseover mouseup mousedown", e => {
+
+                btn.style.cursor = "pointer";
+            });
         });
     }
 
