@@ -5,6 +5,8 @@ class CalcController {
      */
     constructor() {
 
+        this._audio = new Audio('click.mp3');
+        this._audioOnOff = false;
         this._lastOperator = '';
         this._lastNumber = '';
         this._operation = [];
@@ -15,6 +17,7 @@ class CalcController {
         this._currentDate;
         this.initialize();
         this.initButtonsEvents();
+        this.initKeyBoard();
     }
 
     /**
@@ -32,6 +35,24 @@ class CalcController {
         }, 1000);
 
         this.setLastNumberToDisplay();
+        this.pasteFromClipboard();
+
+        document.querySelectorAll('.btn-ac').forEach(btn=>{
+            btn.addEventListener('dblclick', e=>{
+                this.toggleAudio();
+            })
+        })
+    }
+
+    toggleAudio() {
+        this._audioOnOff = !this._audioOnOff;
+    }
+
+    playAudio() {
+        if (this._audioOnOff) {
+            this._audio.currentTime = 0;
+            this._audio.play();
+        }
     }
 
     /**
@@ -229,6 +250,77 @@ class CalcController {
         this.setLastNumberToDisplay();
     }
 
+    copyToClipboard() {
+       
+        let input = document.createElement('input');
+
+        input.value = this.displayCalc;
+
+        document.body.appendChild(input);
+
+        console.log(input);
+        input.select();
+
+        document.execCommand("Copy");
+
+        input.remove();
+    }
+
+    pasteFromClipboard() {
+
+        document.addEventListener('paste', e=>{
+            let text = e.clipboardData.getData('Text');
+            this.displayCalc = parseFloat(text);
+        });
+    }
+
+    initKeyBoard() {
+
+        document.addEventListener('keydown', e=>{
+
+            this.playAudio();
+            switch (e.key) {
+
+                case 'Escape':
+                    this.clearAll();
+                    break;
+                case 'Backspace':
+                    this.clearEntry();
+                    break;
+                case '+':
+                case '-':
+                case '*':
+                case '/':
+                case '%':
+                    this.addOperation(e.key);
+                    break;
+                case '=':
+                case 'Enter':
+                    this.calc();    
+                    break;
+                case '.':
+                case ',':
+                    this.addDot();
+                    break;
+                case '0':
+                case '1':   
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                    this.addOperation(e.key);
+                    break;
+                case 'c':
+                    if (e.ctrlKey) this.copyToClipboard();
+                    break;
+            }
+        });
+    }
+
     /**
      * Mensagem de erro
      */
@@ -241,6 +333,8 @@ class CalcController {
      * @param {*} value 
      */
     execBtn (value) {
+
+        this.playAudio();
 
         switch (value) {
 
