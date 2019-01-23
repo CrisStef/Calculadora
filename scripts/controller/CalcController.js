@@ -130,9 +130,15 @@ class CalcController {
      * Retorna o resultado da operação
      */
     getResult() {
-        return eval(this._operation.join("")); //eval realiza o calculo; join transforma o array em uma string
+        try {
+            return eval(this._operation.join("")); //eval realiza o calculo; join transforma o array em uma string
+    
+        } catch(e) {
+            setTimeout(() => {
+                this.setError();
+            }, 1);
+        }
     }
-
 
     /**
      * Realiza o calculo
@@ -428,6 +434,10 @@ class CalcController {
     }
 
     set displayCalc(value) {
+        if (value.toString().length > 10) {
+            this.setError();
+            return false;
+        }
         this._displayCalcEl.innerHTML = value;
     }
 
